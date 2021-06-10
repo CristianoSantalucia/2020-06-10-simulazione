@@ -113,12 +113,29 @@ public class Model
 	
 	///SIMULAZIONE 
 	
+	public String getResultSim()
+	{
+		String s = "\n"; 
+		for(int i=1; i<=this.eventi.size(); i++)
+		{
+			s += "GIORNO " + i + ": "; 
+			if(eventi.get(i-1) != null)
+				s += eventi.get(i-1).toString(); 
+			else 
+				s += " *pausa*;\n"; 
+		}
+		s += "\nTOT PAUSE: " + this.pause; 
+		return s; 
+	}
+	
 	private Integer giorni; //n
+	private Integer pause = 0; //n
+	List<Actor> eventi; 
 	public void simula(int n)
 	{
 		this.giorni = n;
 		List<Actor> attori = new ArrayList<>(this.vertici.values());
-		List<Actor> eventi = new ArrayList<>(); 
+		eventi = new ArrayList<>(); 
 		//genero eventi per n giorni 
 		for(int g = 0; g < this.giorni; g++)
 		{
@@ -129,32 +146,56 @@ public class Model
 			}
 			else
 			{
+				if(eventi.get(eventi.size()-1) == null) //se ha fatto una pausa
+				{
+					Actor casuale = this.attoreCasuale(eventi);
+					eventi.add(g, casuale); 
+//					System.out.println("ATTORE CASUALE: " + casuale);
+					pause++; 
+					continue; 
+				}
+				
 				double prob = Math.random()*100; 
 				if(prob < 40.0)
 				{
 					Actor consigliato = this.attoreConsigliato(eventi); 
-					eventi.add(g, consigliato); 
-					System.out.println("ATTORE CONSIGLIATO: " + consigliato);
+					if (consigliato != null)
+					{
+						eventi.add(g, consigliato); 
+//						System.out.println("ATTORE CONSIGLIATO: " + consigliato);
+					}
+					else 
+					{
+						Actor casuale = this.attoreCasuale(eventi);
+//						System.out.println("ATTORE CONSIGLIATO (CASUALE): " + casuale);
+					}
 				}
 				else // > 60.0
 				{
 					Actor casuale = this.attoreCasuale(eventi);
 					eventi.add(g, casuale); 
-					System.out.println("ATTORE CASUALE: " + casuale);
+//					System.out.println("ATTORE CASUALE: " + casuale);
+				}
+				
+				//confronto genere
+				Actor ultimo = eventi.get(eventi.size()-1);
+				Actor penultimo = eventi.get(eventi.size()-2);
+				if(this.confrontaGenere(ultimo, penultimo))
+				{
+					g++; 
+					eventi.add(g,null);  
 				}
 			}
 		}
-		System.out.println("\nEVENTI: " + eventi);
+//		System.out.println("\nEVENTI: " + eventi + "\nPAUSE : " + this.pause);
 	}
 	
+	//metodi
 	private Actor attoreCasuale(List<Actor> eventi)
 	{ 
-		Actor intervistato = this.vertici.get((int) (Math.random() * this.vertici.size()));
-		while (eventi.contains(intervistato) || intervistato == null)  
-		{
-			intervistato = this.vertici.get((int) (Math.random() * this.vertici.size()));
-//			System.out.println(intervistato);
-		}
+		List<Actor> actors = new ArrayList<>(this.vertici.values());
+		actors.removeAll(eventi); 		
+		Actor intervistato = actors.get((int) (Math.random() * actors.size())); 
 		return intervistato;
 	}
 	private Actor attoreConsigliato(List<Actor> eventi)
@@ -188,24 +229,8 @@ public class Model
 		
 		return consigliato; 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private boolean confrontaGenere(Actor ultimo, Actor penultimo)
+	{
+		return ultimo.getGender().equals(penultimo.getGender()); 
+	}
 }

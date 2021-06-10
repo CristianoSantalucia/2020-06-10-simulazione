@@ -114,8 +114,8 @@ public class FXMLController
 		try
 		{
 			int n = Integer.parseInt(this.txtGiorni.getText());
-			
 			this.model.simula(n);
+			this.txtResult.appendText("\n\n\n****SIMUALZIONE:\n" + this.model.getResultSim());
 		}
 		catch (Exception e)
 		{
