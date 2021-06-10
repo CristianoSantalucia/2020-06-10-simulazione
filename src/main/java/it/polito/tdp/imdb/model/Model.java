@@ -124,12 +124,12 @@ public class Model
 			else 
 				s += " *pausa*;\n"; 
 		}
-		s += "\nTOT PAUSE: " + this.pause; 
+		s += "\nTOT PAUSE: " + this.pause + "\n"; 
 		return s; 
 	}
 	
-	private Integer giorni; //n
-	private Integer pause = 0; //n
+	private Integer giorni;  
+	private Integer pause = 0;  
 	List<Actor> eventi; 
 	public void simula(int n)
 	{
@@ -146,15 +146,15 @@ public class Model
 			}
 			else
 			{
-				if(eventi.get(eventi.size()-1) == null) //se ha fatto una pausa
+				//se ha fatto una pausa
+				if(eventi.get(eventi.size()-1) == null) 
 				{
 					Actor casuale = this.attoreCasuale(eventi);
 					eventi.add(g, casuale); 
-//					System.out.println("ATTORE CASUALE: " + casuale);
 					pause++; 
 					continue; 
 				}
-				
+				//se NON ha fatto una pausa
 				double prob = Math.random()*100; 
 				if(prob < 40.0)
 				{
@@ -162,21 +162,17 @@ public class Model
 					if (consigliato != null)
 					{
 						eventi.add(g, consigliato); 
-//						System.out.println("ATTORE CONSIGLIATO: " + consigliato);
 					}
 					else 
 					{
 						Actor casuale = this.attoreCasuale(eventi);
-//						System.out.println("ATTORE CONSIGLIATO (CASUALE): " + casuale);
 					}
 				}
 				else // > 60.0
 				{
 					Actor casuale = this.attoreCasuale(eventi);
 					eventi.add(g, casuale); 
-//					System.out.println("ATTORE CASUALE: " + casuale);
 				}
-				
 				//confronto genere
 				Actor ultimo = eventi.get(eventi.size()-1);
 				Actor penultimo = eventi.get(eventi.size()-2);
@@ -187,7 +183,6 @@ public class Model
 				}
 			}
 		}
-//		System.out.println("\nEVENTI: " + eventi + "\nPAUSE : " + this.pause);
 	}
 	
 	//metodi
